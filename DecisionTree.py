@@ -29,12 +29,13 @@ class DecisionTreeBuilder:
     def data_set(self):
         return self.__data_set
 
-    def __tree_generate(self, D, A, root:TreeNode):
-        classified_list = self.__get_classified_list(D)
-        # 看下数据集的元素是不是都是同一个类别的
+    def __tree_generate(self, data_set, attribute_list, root:TreeNode):
+        classified_list = self.__get_classified_list(data_set)
+        # 看下数据集的元素是不是都是同一个类别的，如果都是同一个类别的，直接返回就好了
         if len(classified_list) == 1:
             root.category = classified_list[0]
-        
+            return
+
 
 
     @staticmethod
