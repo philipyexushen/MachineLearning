@@ -14,6 +14,14 @@ class ExcelDataManager:
         density_list: list = sht.range(f"{index_name}2:{index_name}65536").value
         return density_list[:density_list.index(None)]
 
+    def get_all_title(self):
+        wb = self.__wb
+        sht = wb.sheets['Sheet1']
+
+        title_list: list = sht.range(f"A1:ZZ1").value
+        width = title_list.index(None)
+        return title_list[:width]
+
     def fetch(self)->list:
         wb = self.__wb
         sht = wb.sheets['Sheet1']
