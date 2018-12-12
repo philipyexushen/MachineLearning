@@ -44,6 +44,7 @@ class TreeNode:
         self.__division_attribute = None
         self.__child = []
         self.__parent = parent
+        self.__property_name = str()
 
     @property
     def category(self):
@@ -62,12 +63,24 @@ class TreeNode:
         self.__division_attribute = value
 
     @property
+    def property_name(self):
+        return self.__property_name
+
+    @property_name.setter
+    def property_name(self, value):
+        self.__property_name = value
+
+    @property
     def child(self):
         return self.__child
 
     @property
     def parent(self):
         return self.__parent
+
+    @staticmethod
+    def create_node():
+        pass
 
 
 class DecisionTreeBuilder:
@@ -76,7 +89,8 @@ class DecisionTreeBuilder:
         self.__data_set = mgr.fetch()
 
         attribute_list = mgr.get_all_title()
-        self.__attribute_list = attribute_list[1:len(attribute_list) - 1]
+        self.__attribute_list = attribute_list[:len(attribute_list) - 1]
+        self.__attribute_list_flag = [False]*len(attribute_list)
 
     @property
     def data_set(self):
@@ -86,7 +100,7 @@ class DecisionTreeBuilder:
     def attribute_list(self):
         return self.__attribute_list
 
-    def __tree_generate(self, data_set, root:TreeNode, attribute_index_list):
+    def __tree_generate(self, data_set, root:TreeNode):
         """
         :param data_set: 数据集
         :param attribute_list: 属性集（比如西瓜数据集的色泽，根蒂，敲声，纹理等）
@@ -112,7 +126,9 @@ class DecisionTreeBuilder:
 
         GainD_list = []
         # 下面开始找最优划分节点
-        for attribute_index in range(len(data_set[0])):
+        for attribute_index in range(len(data_set[0]) - 1):
+            if self.__attribute_list_flag[attribute_index]:
+                continue
             data_column = [item[attribute_index] for item in data_set]
             properties = list(set(data_column))
             properties_count = Counter(data_column)
@@ -123,18 +139,20 @@ class DecisionTreeBuilder:
                 EntD = caculate_EntD(sub_data_set)
                 GainD = GainD - len(sub_data_set) / len(data_column) * EntD
 
-            GainD_list.append(GainD)
+            GainD_list.append((GainD, attribute_index))
 
         # 找到最好的划分节点，开始递归划分
-        maxGainD, maxGainD_attribute_index = max(enumerate(GainD_list), key=operator.itemgetter(1))
+        max_index, maxGainD = max(enumerate(GainD_list), key=lambda x : x[0])
+        maxGainD_attribute_index = GainD_list[max_index][1]
         data_column = [item[maxGainD_attribute_index] for item in data_set]
         properties = list(set(data_column))
 
         root.division_attribute = self.attribute_list[maxGainD_attribute_index]
-        attribute_index_list_tmp = attribute_index_list.remove(maxGainD_attribute_index)
+        self.__attribute_list_flag[maxGainD_attribute_index] = True
         for property_name in properties:
             child = TreeNode(root)
             root.child.append(child)
+            child.property_name = property_name
 
             sub_data_set = slice_data_set(data_set, maxGainD_attribute_index, property_name)
             # 如果分支节点为空，那么直接创造一个子节点，并且标记为D样本中最多的类
@@ -143,17 +161,20 @@ class DecisionTreeBuilder:
                 child.category = find_perfect_classification(get_classified_list(sub_data_set))
             # 否则，递归操作
             else:
-                self.__tree_generate(sub_data_set, child, attribute_index_list_tmp)
+                self.__tree_generate(sub_data_set, child)
 
+        self.__attribute_list_flag[maxGainD_attribute_index] = False
         return root
 
 
     def tree_generate(self):
         root = TreeNode(None)
-        attribute_index_list = list(range(self.__attribute_list))
-        return self.__tree_generate(self.data_set, root, attribute_index_list)
+        attribute_index_list = list(range(len(self.__attribute_list)))
+        return self.__tree_generate(self.data_set, root)
 
 
 if __name__ == "__main__":
     builder = DecisionTreeBuilder()
-    builder.tree_generate()
+    root =  builder.tree_generate()
+
+    pass

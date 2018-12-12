@@ -2,12 +2,13 @@ import numpy as np
 import xlwings as xw
 
 class ExcelDataManager:
-    def __init__(self, bookName = "watermelon3.0.xlsx"):
-        self.__wb = xw.Book(bookName)
+    def __init__(self, book_name = "watermelon3.0.xlsx", sheet_name= "V1"):
+        self.__wb = xw.Book(book_name)
+        self.__sheet_name = sheet_name
 
     def get_column(self, column_name):
         wb = self.__wb
-        sht = wb.sheets['Sheet1']
+        sht = wb.sheets[self.__sheet_name]
 
         title_list: list = sht.range(f"A1:Z1").value
         index_name = str(chr(title_list.index(column_name) + 65))
@@ -16,7 +17,7 @@ class ExcelDataManager:
 
     def get_all_title(self):
         wb = self.__wb
-        sht = wb.sheets['Sheet1']
+        sht = wb.sheets[self.__sheet_name]
 
         title_list: list = sht.range(f"A1:ZZ1").value
         width = title_list.index(None)
@@ -24,7 +25,7 @@ class ExcelDataManager:
 
     def fetch(self)->list:
         wb = self.__wb
-        sht = wb.sheets['Sheet1']
+        sht = wb.sheets[self.__sheet_name]
 
         title_list: list = sht.range(f"A1:ZZ1").value
         width = title_list.index(None)
