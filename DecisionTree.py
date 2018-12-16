@@ -142,7 +142,7 @@ class DecisionTreeBuilder:
             GainD_list.append((GainD, attribute_index))
 
         # 找到最好的划分节点，开始递归划分
-        max_index, maxGainD = max(enumerate(GainD_list), key=lambda x : x[0])
+        max_index, maxGainD = max(enumerate(GainD_list), key=lambda x : x[1])
         maxGainD_attribute_index = GainD_list[max_index][1]
         data_column = [item[maxGainD_attribute_index] for item in data_set]
         properties = list(set(data_column))
