@@ -4,6 +4,7 @@ from matplotlib import pyplot as plt
 from collections import Counter
 import numpy as np
 import operator
+from enum import Enum, auto
 
 def check_if_same_attribute(data_set):
     for index in range(len(data_set)):
@@ -82,6 +83,10 @@ class TreeNode:
     def create_node():
         pass
 
+class TreeType(Enum):
+    Normal = auto()
+    PrePruning = auto()
+    PostPruning = auto()
 
 class DecisionTreeBuilder:
     def __init__(self):
@@ -100,13 +105,8 @@ class DecisionTreeBuilder:
     def attribute_list(self):
         return self.__attribute_list
 
-    def __tree_generate(self, data_set, root:TreeNode):
-        """
-        :param data_set: 数据集
-        :param attribute_list: 属性集（比如西瓜数据集的色泽，根蒂，敲声，纹理等）
-        :param root: 决策树当前根节点
-        :return: 决策树当前根节点
-        """
+    @staticmethod
+    def __pre_generate_tree(data_set, root):
         if len(data_set) == 0:
             assert "wrong size"
             return root
@@ -122,16 +122,16 @@ class DecisionTreeBuilder:
             root.category =  find_perfect_classification(classified_list)
             return root
 
-        total_EntD = caculate_EntD(data_set)
+        return None
 
+    def __generate_gainD_list(self, data_set):
+        total_EntD = caculate_EntD(data_set)
         GainD_list = []
-        # 下面开始找最优划分节点
         for attribute_index in range(len(data_set[0]) - 1):
             if self.__attribute_list_flag[attribute_index]:
                 continue
             data_column = [item[attribute_index] for item in data_set]
             properties = list(set(data_column))
-            properties_count = Counter(data_column)
 
             GainD = total_EntD
             for property_name in properties:
@@ -141,7 +141,22 @@ class DecisionTreeBuilder:
 
             GainD_list.append((GainD, attribute_index))
 
+        return GainD_list
+
+
+    def __tree_generate(self, data_set, root:TreeNode):
+        """
+        :param data_set: 数据集
+        :param root: 决策树当前根节点
+        :return: 决策树当前根节点
+        """
+        ret = self.__pre_generate_tree(data_set, root)
+        if ret is not None:
+            return ret
+
+        GainD_list = self.__generate_gainD_list(data_set)
         # 找到最好的划分节点，开始递归划分
+        # 普通的决策树不需要
         max_index, maxGainD = max(enumerate(GainD_list), key=lambda x : x[1])
         maxGainD_attribute_index = GainD_list[max_index][1]
         data_column = [item[maxGainD_attribute_index] for item in data_set]
@@ -166,15 +181,40 @@ class DecisionTreeBuilder:
         self.__attribute_list_flag[maxGainD_attribute_index] = False
         return root
 
+    def __pre_pruning_tree_generate(self, data_set, root: TreeNode):
+        """
+        :param data_set: 数据集
+        :param root: 决策树当前根节点
+        :return: 决策树当前根节点
+        """
+        ret = self.__pre_generate_tree(data_set, root)
+        if ret is not None:
+            return ret
 
-    def tree_generate(self):
+        GainD_list = self.__generate_gainD_list(data_set)
+        max_index, maxGainD = max(enumerate(GainD_list), key=lambda x: x[1])
+        maxGainD_attribute_index = GainD_list[max_index][1]
+
+        GainD_list = sorted(GainD_list, key=lambda x: x[0], reverse=True)
+        data_column = [item[maxGainD_attribute_index] for item in data_set]
+        properties = list(set(data_column))
+
+        # 对于预裁剪决策树，要每个最大值都要检测下
+        for item in GainD_list:
+            if item != maxGainD:
+                break
+
+
+
+    def tree_generate(self, tree_type = TreeType.Normal):
         root = TreeNode(None)
-        attribute_index_list = list(range(len(self.__attribute_list)))
-        return self.__tree_generate(self.data_set, root)
-
+        if tree_type is TreeType.Normal:
+            return self.__tree_generate(self.data_set, root)
+        elif tree_type is TreeType.PrePruning:
+            return self.__pre_pruning_tree_generate(self.data_set, root)
 
 if __name__ == "__main__":
     builder = DecisionTreeBuilder()
-    root =  builder.tree_generate()
+    root =  builder.tree_generate(TreeType.PrePruning)
 
     pass
