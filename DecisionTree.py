@@ -90,16 +90,18 @@ class TreeType(Enum):
 
 class DecisionTreeBuilder:
     def __init__(self):
-        mgr = ExcelDataManager()
-        self.__data_set = mgr.fetch()
+        training_data = ExcelDataManager(book_name="V1_Training")
+        self.__training_data_set = training_data.fetch()
+        validation_data = ExcelDataManager(book_name="V1_Validation")
+        self.__validation_data = validation_data.fetch()
 
-        attribute_list = mgr.get_all_title()
+        attribute_list = training_data.get_all_title()
         self.__attribute_list = attribute_list[:len(attribute_list) - 1]
         self.__attribute_list_flag = [False]*len(attribute_list)
 
     @property
-    def data_set(self):
-        return self.__data_set
+    def training_data_set(self):
+        return self.__training_data_set
 
     @property
     def attribute_list(self):
@@ -193,25 +195,47 @@ class DecisionTreeBuilder:
 
         GainD_list = self.__generate_gainD_list(data_set)
         max_index, maxGainD = max(enumerate(GainD_list), key=lambda x: x[1])
-        maxGainD_attribute_index = GainD_list[max_index][1]
-
         GainD_list = sorted(GainD_list, key=lambda x: x[0], reverse=True)
-        data_column = [item[maxGainD_attribute_index] for item in data_set]
-        properties = list(set(data_column))
 
         # 对于预裁剪决策树，要每个最大值都要检测下
-        for item in GainD_list:
-            if item != maxGainD:
+        for GainD_list_item in GainD_list:
+            if GainD_list_item != maxGainD:
                 break
 
+            maxGainD_attribute_index = GainD_list_item[0]
+            root.division_attribute = self.attribute_list[maxGainD_attribute_index]
+            self.__attribute_list_flag[maxGainD_attribute_index] = True
+
+            data_column = [item[maxGainD_attribute_index] for item in data_set]
+            properties = list(set(data_column))
+
+            # 如果不进行划分，那么我们分别考虑其属于什么类别
+
+            # 对每个节点进行一次
+            for property_name in properties:
+                child = TreeNode(root)
+                root.child.append(child)
+                child.property_name = property_name
+
+                sub_data_set = slice_data_set(data_set, maxGainD_attribute_index, property_name)
+                # 如果分支节点为空，那么直接创造一个子节点，并且标记为D样本中最多的类
+                if len(sub_data_set) == 0:
+                    child.division_attribute = None  # 禁止划分，归类
+                    child.category = find_perfect_classification(get_classified_list(sub_data_set))
+                # 否则，递归操作
+                else:
+                    self.__tree_generate(sub_data_set, child)
+
+
+            self.__attribute_list_flag[maxGainD_attribute_index] = False
 
 
     def tree_generate(self, tree_type = TreeType.Normal):
         root = TreeNode(None)
         if tree_type is TreeType.Normal:
-            return self.__tree_generate(self.data_set, root)
+            return self.__tree_generate(self.training_data_set, root)
         elif tree_type is TreeType.PrePruning:
-            return self.__pre_pruning_tree_generate(self.data_set, root)
+            return self.__pre_pruning_tree_generate(self.training_data_set, root)
 
 if __name__ == "__main__":
     builder = DecisionTreeBuilder()
