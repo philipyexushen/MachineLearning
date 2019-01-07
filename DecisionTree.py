@@ -90,9 +90,9 @@ class TreeType(Enum):
 
 class DecisionTreeBuilder:
     def __init__(self):
-        training_data = ExcelDataManager(book_name="V1_Training")
+        training_data = ExcelDataManager(sheet_name="V1_Training")
         self.__training_data_set = training_data.fetch()
-        validation_data = ExcelDataManager(book_name="V1_Validation")
+        validation_data = ExcelDataManager(sheet_name="V1_Validation")
         self.__validation_data = validation_data.fetch()
 
         attribute_list = training_data.get_all_title()
@@ -210,8 +210,10 @@ class DecisionTreeBuilder:
             properties = list(set(data_column))
 
             # 如果不进行划分，那么我们分别考虑其属于什么类别
+            for cls in get_classified_list(self.training_data_set):
+                # ...算了不想写了，写下去也是个体力活，对于预减枝，因为当前划分虽然并不能提升泛化性能，但是并不能保证后面的也不能提高泛化性能泛化
+                pass
 
-            # 对每个节点进行一次
             for property_name in properties:
                 child = TreeNode(root)
                 root.child.append(child)
@@ -226,7 +228,6 @@ class DecisionTreeBuilder:
                 else:
                     self.__tree_generate(sub_data_set, child)
 
-
             self.__attribute_list_flag[maxGainD_attribute_index] = False
 
 
@@ -239,6 +240,5 @@ class DecisionTreeBuilder:
 
 if __name__ == "__main__":
     builder = DecisionTreeBuilder()
-    root =  builder.tree_generate(TreeType.PrePruning)
-
+    root =  builder.tree_generate(TreeType.Normal)
     pass
