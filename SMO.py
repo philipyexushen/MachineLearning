@@ -42,7 +42,7 @@ class DrawSVMDataHelper:
         a1, a2 = w
         y1, y2 = (-b - float(a1[0]) * x1) /  float(a2[0]), (-b -  float(a1[0]) * x2) /  float(a2[0])
         ax.plot([x1, x2], [y1, y2])
-        # 绘制支持向量
+        # 绘制支持向量, 去看一下支持向量的定义
         for i, alpha in enumerate(alphas):
             if abs(alpha) > 1e-3:
                 x, y = data_mat[i]
