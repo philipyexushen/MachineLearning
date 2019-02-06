@@ -21,7 +21,7 @@ def find_perfect_classification(classified_list):
     ret =  Counter(classified_list).most_common(1)
     return ret[0][0]
 
-def caculate_EntD(data_set):
+def calculate_EntD(data_set):
     classified_list = get_classified_list(data_set)
 
     EntD = 0
@@ -57,7 +57,7 @@ class TreeNode:
 
     @property
     def division_attribute(self):
-        return self.__division_attribute
+          return self.__division_attribute
 
     @division_attribute.setter
     def division_attribute(self, value):
@@ -127,7 +127,7 @@ class DecisionTreeBuilder:
         return None
 
     def __generate_gainD_list(self, data_set):
-        total_EntD = caculate_EntD(data_set)
+        total_EntD = calculate_EntD(data_set)
         GainD_list = []
         for attribute_index in range(len(data_set[0]) - 1):
             if self.__attribute_list_flag[attribute_index]:
@@ -138,7 +138,7 @@ class DecisionTreeBuilder:
             GainD = total_EntD
             for property_name in properties:
                 sub_data_set = slice_data_set(data_set, attribute_index, property_name)
-                EntD = caculate_EntD(sub_data_set)
+                EntD = calculate_EntD(sub_data_set)
                 GainD = GainD - len(sub_data_set) / len(data_column) * EntD
 
             GainD_list.append((GainD, attribute_index))
@@ -185,7 +185,7 @@ class DecisionTreeBuilder:
 
     def __pre_pruning_tree_generate(self, data_set, root: TreeNode):
         """
-        :param data_set: 数据集
+        :param data_set: 数据集 
         :param root: 决策树当前根节点
         :return: 决策树当前根节点
         """

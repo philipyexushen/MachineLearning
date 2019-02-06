@@ -49,7 +49,7 @@ def find_gain_rate(column_index):
 
 
 if __name__ == "__main__":
-    find_gain_rate(8)
+    find_gain_rate(4)
 
 
 
