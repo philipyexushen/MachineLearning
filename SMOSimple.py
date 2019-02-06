@@ -39,15 +39,15 @@ class SMOSimple:
                     j = unique_random(i, m)
                     fxj = np.multiply(alphas, label_mat).T * (data_matrix * data_matrix[j, :].T) + b
                     Ej = fxj - label_mat[j]
-                    alpha_i_old = alphas[i]; alpha_j_old = alphas[j]
+                    alpha_i_old = alphas[i].copy(); alpha_j_old = alphas[j].copy()
 
                     # 方形约束
                     if label_mat[i] != label_mat[j]:
-                        L = min(0, alphas[j] - alphas[i])
-                        H = max(C, C + alphas[j] - alphas[i])
+                        L = max(0, alphas[j] - alphas[i])
+                        H = min(C, C + alphas[j] - alphas[i])
                     else:
-                        L = min(0, -C + alphas[j] + alphas[i])
-                        H = max(C, alphas[j] + alphas[i])
+                        L = max(0, -C + alphas[j] + alphas[i])
+                        H = min(C, alphas[j] + alphas[i])
                     if L == H:
                         continue
                     # eta = -(K11 + K22 - 2K12)

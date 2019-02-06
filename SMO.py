@@ -1,4 +1,5 @@
 import numpy as np
+from matplotlib import pyplot as plt
 from SMOSimple import *
 
 def load_data_set(fileName):
