@@ -61,12 +61,15 @@ def main():
     # SMOFactory = SMOSimple(data_mat, label_mat)
     # b, alphas = SMOFactory.apply(0.6)
 
-    data_mat, label_mat = load_data_set("SVMData/testSetRBF2.txt")
-    SMOFactory = SMOPlatt(data_mat, label_mat, lambda data_set : rbf_kernel(data_set, 0.5))
+    data_mat, label_mat = load_data_set("SVMData/testSetRBF.txt")
+    SMOFactory = SMOPlatt(data_mat, label_mat, lambda data_set : rbf_kernel(data_set, 10))
     SMOFactory.apply(0.6)
     alphas = SMOFactory.alphas
     b = SMOFactory.b
 
+    check_data_mat, check_label_mat = load_data_set("SVMData/testSetRBF2.txt")
+    correct_rate = SMOFactory.check(check_data_mat, check_label_mat)
+    print(f"correct_rate={correct_rate}")
     DrawSVMDataHelper.draw(data_mat, label_mat, alphas, b, False)
 
 if __name__ == "__main__":

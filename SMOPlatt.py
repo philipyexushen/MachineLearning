@@ -175,3 +175,20 @@ class SMOPlatt:
             else:
                 self.__b = (b1 + b2) / 2.0
         return True
+
+    def check(self, check_data_mat, check_label_mat):
+        check_data_matrix = np.mat(check_data_mat)
+        check_label_mat = np.mat(check_label_mat)
+
+        data_matrix = np.mat(self.__data_set)
+        label_mat = np.mat(self.__label_mat).transpose()
+        c = np.multiply(self.alphas, label_mat).T
+        b = self.b
+
+        m, n = np.shape(check_data_mat)
+        fx_matrix = np.sign(c * (data_matrix * check_data_matrix.T) + b)
+
+        result = np.subtract(fx_matrix, check_label_mat)
+        failed_sum = len(np.nonzero(result)[0])
+
+        return (m - failed_sum) / m
