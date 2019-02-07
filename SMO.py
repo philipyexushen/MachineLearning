@@ -62,7 +62,7 @@ def main():
     # b, alphas = SMOFactory.apply(0.6)
 
     data_mat, label_mat = load_data_set("SVMData/testSetRBF.txt")
-    SMOFactory = SMOPlatt(data_mat, label_mat, lambda data_set : rbf_kernel(data_set, 10))
+    SMOFactory = SMOPlatt(data_mat, label_mat, lambda data_set : rbf_kernel(data_set, 0.5))
     SMOFactory.apply(0.6)
     alphas = SMOFactory.alphas
     b = SMOFactory.b
