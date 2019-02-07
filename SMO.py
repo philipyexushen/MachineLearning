@@ -51,7 +51,7 @@ class DrawSVMDataHelper:
             if abs(alpha) > 1e-3:
                 x, y = data_mat[i]
                 ax.scatter([x], [y], s=150, c='none', alpha=0.7, linewidth=1.5, edgecolor='#AB3319')
-            sum_svm_support += 1
+                sum_svm_support += 1
 
         print(f"sum_svm_support={sum_svm_support}")
         plt.show()
