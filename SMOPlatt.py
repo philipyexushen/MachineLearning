@@ -1,12 +1,25 @@
 import numpy as np
 import random
 
+def rbf_kernel(data_mat, alpha):
+    m, n = np.shape(data_mat)
+    kernel = np.mat(np.zeros((m, m)))
+    for i in range(m):
+        K = np.mat(np.zeros((m, 1)))
+        row = data_mat[i, :]
+        for j in range(m):
+            deltaRow = data_mat[j, :] - row
+            K[j] = deltaRow * deltaRow.T
+        K = np.exp(K / (-1 * alpha ** 2))  # divide in NumPy is element-wise not matrix like Matlab
+        kernel[:,i] = K
+    return kernel
+
 class SMOPlatt:
     """
     带核函数版本的完整的SMO算法实现
     """
 
-    def __init__(self, data_mat, label_mat, kernel_function):
+    def __init__(self, data_mat, label_mat, kernel_generator):
         self.__data_set: np.ndarray = data_mat
         self.__label_mat: np.ndarray = label_mat
 
@@ -16,9 +29,7 @@ class SMOPlatt:
         self.__b = 0
 
         # 用核函数映射一下
-        self.__K = np.mat(np.zeros((m, m)))
-        for i in range(m):
-            self.__K[:, i] = kernel_function(self.__data_set, self.__data_set[i, :])
+        self.__K = kernel_generator(np.mat(self.__data_set))
 
     @property
     def alphas(self): return self.__alphas
@@ -110,8 +121,7 @@ class SMOPlatt:
         # Ei是误差，所以下面的意思是，误差越大，越值得优化，并且alpha已经保证了不能在边界上(0和C)了（看下面的代码的clip）
         # magic代码，可以加快迭代速度，但是不知道为什么
         if ((label_mat[i] * Ei < -toler) and (alphas[i] < C)) or ((label_mat[i] * Ei > toler) and (alphas[i] > 0)):
-            j = self.__unique_random(i, m)
-            Ej = self.__get_Ek(j, alphas, label_mat, data_matrix, self.__b)
+            j, Ej = self.__unique_random_cache(i, Ei, alphas, label_mat, data_matrix, self.__b)
 
             alpha_i_old = alphas[i].copy(); alpha_j_old = alphas[j].copy()
 
