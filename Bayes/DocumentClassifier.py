@@ -2,34 +2,27 @@ import numpy as np
 
 class DocumentClassifier:
     def __init__(self):
-        self.__posting_list = None
-        self.__class_vec = None
+        self.__doc_list = None
+        self.__class_list = None
         self.__vocab_set = None
         self.__p0V = None
         self.__p1V = None
         self.__pAb = None
 
-    def load_data_set(self)->None:
-        posting_list = [['my', 'dog', 'has', 'flea', 'problems', 'help', 'please'],
-                        ['maybe', 'not', 'take', 'him', 'to', 'dog', 'park', 'stupid'],
-                        ['my', 'dalmation', 'is', 'so', 'cute', 'I', 'love', 'him'],
-                        ['stop', 'posting', 'stupid', 'worthless', 'garbage'],
-                        ['mr', 'licks', 'ate', 'my', 'steak', 'how', 'to', 'stop', 'him'],
-                        ['quit', 'buying', 'worthless', 'dog', 'food', 'stupid']]
-        class_vec = [0, 1, 0, 1, 0, 1]  # 1表示侮辱性词，0表示非侮辱性词
-        self.__posting_list = posting_list
-        self.__class_vec = class_vec
+    def load_data_set(self, doc_list, class_list)->None:
+        self.__doc_list = doc_list
+        self.__class_list = class_list
 
         vocab_set = set([])
-        for document in self.__posting_list:
+        for document in self.__doc_list:
             vocab_set = vocab_set | set(document)
         self.__vocab_set = list(vocab_set)
 
     def train(self)->None:
         train_mat = []
-        for doc in self.__posting_list:
+        for doc in self.__doc_list:
             train_mat.append(self.__set_words_to_vec(self.__vocab_set, doc))
-        self.__p0V, self.__p1V, self.__pAb = self.__trainNB0(np.array(train_mat), np.array(self.__class_vec))
+        self.__p0V, self.__p1V, self.__pAb = self.__trainNB0(np.array(train_mat), np.array(self.__class_list))
 
     def test(self, entry)->bool:
         this_doc = np.array(self.__set_words_to_vec(self.__vocab_set, entry))
@@ -64,6 +57,7 @@ class DocumentClassifier:
         return_vec = [0] * len(vocab_list)
         for word in input_set:
             if word in vocab_list:
-                return_vec[vocab_list.index(word)] = 1
+                # 词袋模型
+                return_vec[vocab_list.index(word)] += 1
         return return_vec
 
