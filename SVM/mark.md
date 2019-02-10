@@ -45,3 +45,5 @@ min_{a}\frac{1}{2}\sum_{i = 1}^{N}\sum_{j = 1}^{N}a_{i}a_{j}y_{i}y_{j}(x_{i} \cd
 s.t \sum_{i = 1}^{N}a_{i} = 0 \\ \\
 a_{i}\geq 0, \quad i = 1,2...N
 \end{array}$$
+
+使ai > 0的点称为支持向量

@@ -1,7 +1,7 @@
 import numpy as np
 from matplotlib import pyplot as plt
-from SMOSimple import *
-from SMOPlatt import *
+from SVM.SMOPlatt import *
+from SVM.SMOSimple import *
 
 def load_data_set(fileName):
     dataMat = []; labelMat = []
