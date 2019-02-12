@@ -1,5 +1,5 @@
-from DataManager import *
-from Common import *
+from DecisionTree.DataManager import *
+from DecisionTree.Common import *
 
 def get_position_and_negative_sum(data_set, left, right):
     sum_pos, sum_neg = 0, 0

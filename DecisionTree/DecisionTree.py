@@ -1,5 +1,5 @@
-from Common import *
-from DataManager import *
+from DecisionTree.Common import *
+from DecisionTree.DataManager import *
 from matplotlib import pyplot as plt
 from collections import Counter
 import numpy as np
