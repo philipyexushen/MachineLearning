@@ -20,7 +20,7 @@ def main():
     train_data, train_class_labels = load_data_set("EnsembleLearning\\horseColicTraining2.txt")
     classifier = AdaBoostClassifier()
     classifier.load_data(np.matrix(train_data), np.matrix(train_class_labels))
-    classifier.train()
+    classifier.train(100)
 
     test_data, test_class_labels = load_data_set("EnsembleLearning\\horseColicTraining2.txt")
     prediction = classifier.test(np.matrix(test_data), np.matrix(test_class_labels))
