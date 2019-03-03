@@ -20,14 +20,19 @@ class DecisionStump:
             retArray[data_matrix[:, dim] > thresh_value] = -1.0
         return retArray
 
-    def buildStump(self):
+    def buildStump(self, selected_index = None):
         data_matrix = self.__data_matrix; label_mat = self.__class_labels.T
         m, n = np.shape(data_matrix)
         num_steps = 10.0
         best_stump = {}
         best_class_est = np.mat(np.zeros((m, 1)))
         min_error = np.inf
-        for i in range(n):
+
+        if selected_index is None:
+            selected_index = range(n)
+
+        assert selected_index is not None
+        for i in selected_index:
             range_min = data_matrix[:, i].min(); range_max = data_matrix[:, i].max()
             step_size = (range_max - range_min) / num_steps
 

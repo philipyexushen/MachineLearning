@@ -46,7 +46,7 @@ class AdaBoostClassifier:
             if error_rate == 0.0:
                 break
 
-    def test(self, test_data:np.matrix, test_class_labels:np.matrix):
+    def test(self, test_data:np.matrix)->np.ndarray:
         classifier = self.__weak_class_arr
         m, n = np.shape(self.data_matrix)
         aggClassEst = np.mat(np.zeros((m, 1)))
