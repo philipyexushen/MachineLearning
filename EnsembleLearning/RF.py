@@ -22,7 +22,7 @@ class RandomForest:
 
     def __generate_new_data_set(self):
         m, n = np.shape(self.data_matrix)
-        selected_index = np.random.choice(m, int(m / 2))
+        selected_index = np.random.choice(m, m)
         return self.__data_matrix[selected_index], self.class_labels[:, selected_index]
 
     def train(self, forest_num = 100):
@@ -33,7 +33,7 @@ class RandomForest:
             m, n = np.shape(new_data_set)
             D = np.mat(np.ones((m, 1)) / m)
 
-            selected_index = np.random.choice(n, int(n /2))
+            selected_index = np.random.choice(n, int(n / 4))
 
             stump = DecisionStump()
             stump.load_data(new_data_set, new_class_labels, D)
