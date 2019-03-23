@@ -241,4 +241,4 @@ class DecisionTreeBuilder:
 if __name__ == "__main__":
     builder = DecisionTreeBuilder()
     root =  builder.tree_generate(TreeType.Normal)
-    pass
+    print(root)

@@ -2,7 +2,7 @@ import numpy as np
 import xlwings as xw
 
 class ExcelDataManager:
-    def __init__(self, book_name = "watermelon3.0.xlsx", sheet_name= "V1"):
+    def __init__(self, book_name = "./DecisionTree/watermelon3.0.xlsx", sheet_name= "V1"):
         self.__wb = xw.Book(book_name)
         self.__sheet_name = sheet_name
 
