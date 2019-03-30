@@ -41,5 +41,19 @@ def load_data_set(file_name):
 
     return data_mat,label_mat
 
+def load_data_set2(file_name):
+    num_feat = len(open(file_name).readline().split('\t')) #get number of fields
+    data_mat = []
+
+    with open(file_name) as fr:
+        for line in fr.readlines():
+            line_arr =[]
+            cur_line = line.strip().split('\t')
+            for i in range(num_feat):
+                line_arr.append(float(cur_line[i]))
+            data_mat.append(line_arr)
+
+    return data_mat
+
 
 

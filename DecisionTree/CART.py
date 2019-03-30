@@ -5,12 +5,11 @@ def variance_error(data_set):
 
 class CART:
     def __init__(self):
-        self.__data_matrix: np.matrix = None
-        self.__class_labels: np.matrix = None
+        self.__data_matrix: np.ndarray = None
+        self.__ops = (1, 4)
 
-    def load_data(self, data_matrix: np.matrix, class_labels: np.matrix):
+    def load_data(self, data_matrix: np.ndarray):
         self.__data_matrix = data_matrix
-        self.__class_labels = class_labels
 
     @classmethod
     def reg_leaf(cls, data_set):
@@ -18,15 +17,14 @@ class CART:
 
     @classmethod
     def split_data_set(cls, data_set, feature, value):
-        mat0 = data_set[np.nonzero(data_set[:, feature] > value)[0], :][0]
-        mat1 = data_set[np.nonzero(data_set[:, feature] <= value)[0], :][0]
+        mat0 = data_set[np.nonzero(data_set[:, feature] > value)[0], :]
+        mat1 = data_set[np.nonzero(data_set[:, feature] <= value)[0], :]
         return mat0, mat1
 
-    def __choose_best_feature(self, ops):
-        tolS, tolN = ops
-        data_set = self.__data_matrix
+    def __choose_best_feature(self, data_set: np.ndarray):
+        tolS, tolN = self.__ops
         # if all the target variables are the same value: quit and return value
-        if len(set(data_set[:, -1].T.tolist()[0])) == 1:
+        if len(set(data_set[:, -1].transpose().tolist())) == 1:
             return None, CART.reg_leaf(data_set)
 
         m, n = np.shape(data_set)
@@ -34,6 +32,7 @@ class CART:
         S = variance_error(data_set)
         best_s = np.inf; best_index = 0; best_value = 0
         for feat_index in range(n - 1):
+            fuck = set(data_set[:, feat_index])
             for split_val in set(data_set[:, feat_index]):
                 mat0, mat1 = CART.split_data_set(data_set, feat_index, split_val)
                 if (np.shape(mat0)[0] < tolN) or (np.shape(mat1)[0] < tolN):
@@ -56,12 +55,28 @@ class CART:
         return best_index, best_value  # returns the best feature to split on
         # and the value used for that split
 
-    def create_tree(self):
-        self.__choose_best_feature((1, 4))
+    def __create_tree(self, data_set):
+        best_index, best_value = self.__choose_best_feature(data_set)
+        if best_index is None:
+            return best_value  # if the splitting hit a stop condition return val
 
+        ret_tree = dict()
+        ret_tree['spInd'] = best_index
+        ret_tree['spVal'] = best_value
+        l_set, r_set = CART.split_data_set(data_set, best_index, best_value)
+        ret_tree['left'] = self.__create_tree(l_set)
+        ret_tree['right'] = self.__create_tree(r_set)
+        return ret_tree
+
+    def create_tree(self):
+        return self.__create_tree(self.__data_matrix)
 
 def main():
-    train_data, train_class_labels = load_data_set("DecisionTree//ex0.txt")
+    train_data = load_data_set2("DecisionTree//data//ex0.txt")
+    cart = CART()
+    cart.load_data(np.array(train_data))
+    ret = cart.create_tree()
+    print(ret)
 
 if __name__ == "__main__":
     main()
