@@ -114,6 +114,7 @@ class CART:
             return best_value  # if the splitting hit a stop condition return val
 
         ret_tree = dict()
+        
         ret_tree['spInd'] = best_index
         ret_tree['spVal'] = best_value
         l_set, r_set = CART.split_data_set(data_set, best_index, best_value)
