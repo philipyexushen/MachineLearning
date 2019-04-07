@@ -17,4 +17,7 @@ class BoostingTree:
     @property
     def class_labels(self):
         return self.__class_labels
-    
+
+    def train(self):
+        # TODO
+        pass

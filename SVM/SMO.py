@@ -1,4 +1,3 @@
-import numpy as np
 from matplotlib import pyplot as plt
 from SVM.SMOPlatt import *
 from SVM.SMOSimple import *

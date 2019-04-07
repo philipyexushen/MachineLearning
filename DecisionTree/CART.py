@@ -1,5 +1,5 @@
 from DecisionTree.Common import *
-from matplotlib import pyplot as plt
+from matplotlib import pyplot as plt, RcParams
 from sklearn.datasets import load_iris
 
 def variance_error(data_set):
@@ -114,7 +114,7 @@ class CART:
             return best_value  # if the splitting hit a stop condition return val
 
         ret_tree = dict()
-        
+
         ret_tree['spInd'] = best_index
         ret_tree['spVal'] = best_value
         l_set, r_set = CART.split_data_set(data_set, best_index, best_value)
@@ -125,7 +125,6 @@ class CART:
     def create_tree(self):
         self.__tree = self.__create_tree(self.__data_matrix)
         self.__prune_tree = self.__prune(self.tree.copy(), self.__test_matrix)
-        pass
 
 
 def main():
